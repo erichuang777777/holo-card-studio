@@ -67,6 +67,7 @@ function renderMenu() {
     <div class="nav">
       <button class="btn" data-go="packs">開卡包${collection.freePacks ? `（${collection.freePacks}）` : ''}</button>
       <button class="btn" data-go="collection">我的收藏（${owned}）</button>
+      <a class="btn" href="./showcase.html" style="text-decoration:none">3D 角色展示</a>
     </div>
     <div class="panel"><h2>選擇期別（關卡）</h2><div class="choices">${stageBtns}</div></div>
     <div class="panel"><h2>選擇亞型（敵方加成）</h2><div class="choices">${subBtns}</div>

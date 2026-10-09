@@ -6,11 +6,31 @@
 
 ```bash
 cd game
+npm install                    # 安裝 three.js（3D 展示用）
 python3 -m http.server 8765   # 或任何靜態伺服器
 # 開啟 http://localhost:8765/
 npm test                       # 規則引擎測試
 node test/balance.mjs 10       # 平衡模擬：開 10 包時各關卡勝率
 ```
+
+## 3D 角色展示（showcase.html）
+
+照片浮雕：去背照片加上程式推算的深度圖，在 three.js 中位移成立體人物，站在全息展示台上。
+
+- 拖曳旋轉（水平約 ±30 度）、滾輪或雙指縮放；視角按鈕：正面、特寫、側面。
+- 換裝溶解（白袍、刷手服）、招牌技能演出、動漫式出場動畫（速度線、眼神特寫、剪影、名字砸下）。
+- 照片浮雕只有正面資訊，轉超過約 30 度邊緣會拉長；要做 360 度旋轉需要真正的 3D 模型。
+
+新增一位醫師：
+
+```bash
+pip install "rembg[cpu]" "opencv-python-headless<5" numpy pillow
+python3 tools/prepare_portrait.py assets/doctors/<id> coat=<白袍照片> scrubs=<刷手服照片>
+# 可選：assets/doctors/<id>/profile.json 填姓名、教職、專長、能力值、招牌技能、台詞
+# 開啟 showcase.html?doctor=<id>
+```
+
+`assets/doctors/` 是個人肖像，已排除在版本庫之外。
 
 ## 規則
 

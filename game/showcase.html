@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>角色展示</title>
+<link rel="stylesheet" href="./showcase.css">
+<script type="importmap">
+{"imports": {"three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/"}}
+</script>
+</head>
+<body>
+<canvas id="stage" aria-label="可旋轉縮放的 3D 角色展示"></canvas>
+
+<header class="top">
+  <a class="back" href="./index.html">← 回到遊戲</a>
+  <span class="hint">拖曳旋轉・滾輪或雙指縮放</span>
+</header>
+
+<aside class="sheet" id="sheet">
+  <div class="rarity" id="rarity"></div>
+  <h1 id="name"></h1>
+  <p class="title" id="title"></p>
+  <div class="tags" id="tags"></div>
+  <section>
+    <h2>能力值 <small id="stat-note"></small></h2>
+    <div id="stats"></div>
+  </section>
+  <section>
+    <h2>招牌技能</h2>
+    <p class="skill"><b id="skill-name"></b><span id="skill-text"></span></p>
+  </section>
+  <blockquote id="quote"></blockquote>
+</aside>
+
+<nav class="dock" aria-label="展示控制">
+  <div class="group"><span>服裝</span><button data-outfit="coat" aria-pressed="true">白袍</button><button data-outfit="scrubs" aria-pressed="false">刷手服</button></div>
+  <div class="group"><span>動作</span><button id="act-skill">招牌技能</button><button id="act-intro">出場動畫</button></div>
+  <div class="group"><span>視角</span><button data-view="front">正面</button><button data-view="face">特寫</button><button data-view="side">側面</button></div>
+</nav>
+
+<div id="intro" class="intro" hidden>
+  <canvas id="speed"></canvas>
+  <div class="panel p1"><div class="eyes" id="eyes"></div></div>
+  <div class="panel p2"><img id="silhouette" alt=""></div>
+  <div class="slash"></div>
+  <div class="nameplate"><span class="dept" id="intro-dept"></span><span class="big" id="intro-name"></span><span class="role" id="intro-title"></span></div>
+  <div class="flash"></div>
+  <button class="skip" id="skip">略過 ›</button>
+</div>
+
+<div id="skill-banner" class="skill-banner" hidden><span class="k" id="banner-skill"></span><span class="q" id="banner-quote"></span></div>
+<div id="loading" class="loading">載入角色中…</div>
+<script type="module" src="./src/showcase.js"></script>
+</body>
+</html>
