@@ -1,6 +1,7 @@
 > **醫師武將版（改作說明）**：本資料夾改作自 [mike007jd/voxel-musou](https://github.com/mike007jd/voxel-musou)（MIT License，原作者版權聲明見 `LICENSE`）。
 > 新增：`src/chars/doctor/`（依照片製作的方塊醫師武將，沿用劉備的雙劍招式）、`viewer.html` + `src/viewer.js`（輕量武將檢視頁，可旋轉縮放、播放招式，不載入戰場）。
 > 試玩：`python3 -m http.server 8000` 後開啟 `viewer.html?char=doctor`，或 `?go=free&char=doctor&map=changban`。
+> 新增地圖：`src/world/maps/hospital.js`（乳醫中心：正門廣場、門診大廳與乳房攝影室、手術中心、病理病房），`mapview.html` + `src/mapview.js`（場景導覽，`mapview.html?map=hospital`）。試玩：`?go=free&char=doctor&map=hospital`。
 > 原專案的 `media/`（截圖與預告片）未複製。
 
 <h1 align="center">Voxel Musou</h1>
