@@ -30,6 +30,7 @@ import { createHero, createHeroView } from './hero/hero.js';
 import { createCrowd } from './crowd/crowd.js';
 import { createCrowdView } from './crowd/view.js';
 import { armyPair, FREE_ARMY } from './crowd/armies.js';
+import { MAPS } from './world/maps/index.js';
 import { createCombat } from './combat/combat.js';
 import { createActors } from './actors/actors.js';
 import { createActorsView } from './actors/view.js';
@@ -133,7 +134,7 @@ function startBattle({ char = 'zhaoyun', mode = 'free', ch, map } = {}) {
   const C = mode === 'free' ? null : chapter(ch);                                         // C2: the chapter / trial
   const who = CHARS[char] || CHARS.zhaoyun, newKit = who.kit !== game.hero.kit;
   char = who.id; ch = C?.CH.id; map = C ? C.CH.map : map || HOME;                          // C2: resolved ids
-  const prev = game.army; game.army = armyPair(C ? C.CH.army : CHAPTERS.find((m) => m.CH.map === map)?.CH.army ?? FREE_ARMY);              // C3
+  const prev = game.army; game.army = armyPair(C ? C.CH.army : CHAPTERS.find((m) => m.CH.map === map)?.CH.army ?? MAPS[map]?.army ?? FREE_ARMY);              // C3
   if (game.army.foe !== prev.foe || game.army.ally !== prev.ally) { crowdView.dispose(); crowdView = createCrowdView(scene, game); }
   world.load(map, { army: game.army });                                                    // C1
   map = MAP.id;

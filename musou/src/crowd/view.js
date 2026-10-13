@@ -116,6 +116,7 @@ function bodyParts(C, officer) {
     b([-0.15, 0.175, -0.15], [0.15, 0.235, 0.15], 0xc8a050),
     b([-0.04, 0.34, -0.04], [0.04, 0.66, 0.04], C.crest), b([-0.04, 0.56, -0.26], [0.04, 0.66, -0.04], C.crest),
     b([-0.04, 0.4, -0.3], [0.04, 0.56, -0.22], C.crest)];
+  if (C.form === 'cancer') cancerForm(p, C, officer);
   p.arm = [
     b([-0.055, -0.24, -0.06], [0.055, 0.03, 0.06], C.cloth),
     b([-0.06, -0.46, -0.063], [0.06, -0.22, 0.063], (x, y, z, i, j) => (j % 2 ? C.bracer : shade(C.bracer, 1.35))),
@@ -127,6 +128,35 @@ function bodyParts(C, officer) {
     b([-0.07, -0.42, -0.078], [0.07, -0.29, 0.13], C.boot),
   ];
   return p;
+}
+
+const hq = (i, j, k = 0) => ((((i + 7) * 73856093) ^ ((j + 3) * 19349663) ^ (k * 83492791)) >>> 0) % 97 / 97;
+/** 癌軍 (armies.js cancer): the head becomes a lumpy cell (speckled membrane, dark nuclei, glowing nodules on top) behind a
+ *  blank white mask with glowing slit eyes and a crack for a mouth; glowing nodules grow from the shoulders and back;
+ *  officers add a crown of spikes in the plume colour. Replaces the helmet, wings, beard and tassel. */
+function cancerForm(p, C, officer) {
+  const cell = (x, y, z, i, j) => { const h = hq(i, j, 1); return h < 0.08 ? C.brow : h < 0.3 ? C.skinD : C.skin; };
+  p.head = [
+    b([-0.12, 0.0, -0.12], [0.12, 0.27, 0.11], cell),
+    b([-0.15, 0.08, -0.07], [-0.1, 0.22, 0.06], cell), b([0.1, 0.1, -0.09], [0.16, 0.25, 0.04], cell),     // lumps
+    b([-0.06, 0.25, -0.1], [0.09, 0.33, 0.04], cell), b([-0.1, 0.02, -0.15], [0.06, 0.16, -0.1], cell),
+    b([-0.095, 0.05, 0.1], [0.095, 0.23, 0.135], C.mask),                                                // the mask
+    // glowing slit eyes and a dark crack of a mouth, whole voxels (V = 4.2 cm) standing proud of the mask so they always read
+    b([-0.084, 0.126, 0.11], [-0.0, 0.168, 0.152], C.eye), b([0.0, 0.126, 0.11], [0.084, 0.168, 0.152], C.eye),
+    b([-0.042, 0.126, 0.11], [0.042, 0.168, 0.152], C.mask),
+    b([-0.042, 0.042, 0.11], [0.042, 0.084, 0.145], C.brow),
+    b([-0.03, 0.31, -0.03], [0.03, 0.37, 0.03], C.tassel), b([0.06, 0.27, -0.07], [0.1, 0.31, -0.03], C.tassel),
+    b([-0.13, 0.2, -0.02], [-0.1, 0.24, 0.02], C.tassel),
+  ];
+  if (officer) for (let k = 0; k < 7; k++) {                                                          // crown of spikes
+    const a = (k / 7) * Math.PI * 2, x = Math.sin(a) * 0.1, z = Math.cos(a) * 0.09 - 0.01, h = 0.12 + (k % 2) * 0.08;
+    p.head.push(b([x - 0.022, 0.26, z - 0.022], [x + 0.022, 0.26 + h, z + 0.022], C.plume));
+  }
+  // nodules on the shoulders and the back (they carry the glow at distance and in the dark)
+  p.torso.push(
+    b([-0.27, 0.46, -0.05], [-0.19, 0.53, 0.05], C.tassel), b([0.18, 0.46, -0.08], [0.25, 0.52, 0.0], C.tassel),
+    b([-0.08, 0.3, -0.16], [0.0, 0.38, -0.12], C.tassel), b([0.04, 0.12, -0.15], [0.1, 0.18, -0.11], C.tassel),
+    b([-0.13, 0.24, 0.11], [0.13, 0.42, 0.145], (x, y, z, i, j) => (hq(i, j, 2) < 0.15 ? C.tassel : C.plate)));
 }
 
 // weapons in weapon space: grip at the origin, +Z along the weapon
@@ -174,6 +204,21 @@ function weaponGeos(C) {
 function officerGeos(P, pre) {
   const off = bodyParts(P, true), g = {};
   for (const k of ['hips', 'torso', 'head', 'arm', 'thigh', 'shin']) g[pre + k] = sculpt(off[k], V, 0.1);
+  return g;
+}
+
+/** A standing soldier of army `a` (armies.js) for previews (viewer.html ?army=id): the near-LOD parts on a fixed stance,
+ *  feet at 0, facing +Z. Not used in battle. */
+export function soldierPreview(a, officer = false) {
+  const P = palette(a), parts = officer ? bodyParts(P.officer, true) : bodyParts(P.grunt, false), g = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, flatShading: true });
+  const add = (k, x, y, z) => { const m = new THREE.Mesh(sculpt(parts[k], V, 0.12), mat); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
+  const pel = 0.86;
+  add('hips', 0, pel, 0); add('torso', 0, pel + J.waist, 0); add('head', 0, pel + J.waist + J.neck, 0);
+  for (const sx of [-1, 1]) {
+    add('arm', sx * J.shX, pel + J.waist + J.shY, 0).rotation.z = sx * 0.12;
+    add('thigh', sx * J.hipX, pel + J.hipY, 0); add('shin', sx * J.hipX, pel + J.hipY - J.knee, 0);
+  }
   return g;
 }
 

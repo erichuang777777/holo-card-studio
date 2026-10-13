@@ -39,6 +39,7 @@ export default {
   ],
   route: [[0, -118], [0, -96], [0, FACADE_Z], [0, -50], [0, OR_Z], [0, 8], [0, WARD_Z], [0, 76], [0, 96]],
   gates: {},
+  army: { foe: 'cancer', ally: 'shu' },                                       // free battle here fields the 癌軍 (crowd/armies.js)
   anchors: {},
   spawn: { story: { x: 0, z: -112, yaw: 0, tilt: -0.06 }, free: { x: 0, z: 8, yaw: 0 } },
   water: null,

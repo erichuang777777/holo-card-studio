@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { CHARS, CHAR_ORDER } from './chars/index.js';
 import { sampleClip, POSE_SIZE } from './hero/rig.js';
 import { standOfficer, poseOfficer } from './ui/stage.js';
+import { ARMIES } from './crowd/armies.js';
+import { soldierPreview } from './crowd/view.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -105,6 +107,14 @@ function play(m) {
   $('bar').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
 }
 
+// ?army=<id>: preview that army's grunt and officer side by side instead of an officer (crowd/view.js soldierPreview)
+const ARMY = ARMIES[params.get('army')];
+if (ARMY) {
+  document.querySelector('.panel').style.display = 'none'; $('bar').style.display = 'none';
+  const lineup = new THREE.Group(); scene.add(lineup);
+  [[-1.1, false, 1.0], [0, true, 1.0], [1.1, false, 1.0]].forEach(([x, off], i) => { const s = soldierPreview(ARMY, off); s.position.x = x; s.rotation.y = i === 2 ? -0.5 : i === 0 ? 0.5 : 0; lineup.add(s); });
+  ring.material.color.set(ARMY.ui);
+}
 $('who').innerHTML = CHAR_ORDER.map((k) => `<option value="${k}" ${k === id ? 'selected' : ''}>${CHARS[k].name.zh}</option>`).join('');
 $('who').onchange = (e) => load(e.target.value);
 load(id);
@@ -121,6 +131,7 @@ renderer.setAnimationLoop(() => {
   const loopClip = clipId === 'idle';
   clipT += dt / (loopClip ? 2.5 : 1.3);
   if (!loopClip && clipT > 1.25) { clipT = 0; clipId = 'idle'; play('idle'); }
+  if (ARMY) { officer.root.visible = false; }
   sampleClip(officer.K.clips[clipId], loopClip ? clipT % 1 : Math.min(1, clipT), pose);
   poseOfficer(officer, pose, origin, 0, dt);
   updateCamera(dt);

@@ -39,6 +39,26 @@ export const OFFICER = {
 export const palette = (a) => ({ grunt: { ...GRUNT, ...a.grunt }, officer: { ...OFFICER, ...a.officer } });
 
 export const ARMIES = {
+  // 癌軍 (the hospital map): anthropomorphised cancer, deliberately not human — a lumpy cell head behind a blank white
+  // mask with glowing slit eyes, a dark violet carapace, glowing magenta nodules on the shoulders and back (view.js
+  // bodyParts form 'cancer'). Officers add a crown of spikes. Names follow the disease's traits, not people.
+  cancer: {
+    name: { zh: '癌軍', en: 'Cancer Host' }, glyph: '癌', flag: '#3a1640', ink: '#f2b8e0', ui: '#d850c8', glow: [0, 0, 0, 0.6],
+    grunt: {
+      form: 'cancer',
+      armor: 0x5e3a6e, hi: 0x9e72ae, lace: 0x2a1632, plate: 0x704a80, rivet: 0xe060d0, cloth: 0x4c2c5a, pants: 0x3c2a4a,
+      wrap: 0x7a6084, wrapD: 0x52405c, boot: 0x2a1a32, skin: 0xb090b8, skinD: 0x84668e, eye: 0xff4ad0, brow: 0x2a1a30,
+      helm: 0x5e3a6e, helmHi: 0x9e72ae, band: 0xe060d0, belt: 0x3a2444, buckle: 0xd850c8, bracer: 0x5e3a6e,
+      tassel: 0xe060d0, crest: 0xe060d0, weapon: 0xb040b0, shield: [0x4a1c52, 0x32123a, 0x3e1846], mask: 0xe8e2ec,
+    },
+    officer: {
+      form: 'cancer',
+      armor: 0x4a2860, hi: 0x9a62b4, lace: 0x1e0c28, plate: 0x5e3478, rivet: 0xff6ae0, cloth: 0x3a1848, pants: 0x2c1838,
+      wrap: 0x5a3a6a, wrapD: 0x3a2448, skin: 0xa080ac, skinD: 0x765884, tassel: 0xff6ae0, crest: 0xff6ae0, weapon: 0xd050c8, bracer: 0x5e3478, eye: 0xff4ad0, helm: 0x4a2860, helmHi: 0xff6ae0,
+      band: 0xff6ae0, belt: 0x40204c, buckle: 0xff6ae0, cape: [0x3a0e40, 0x5a1a62], plume: 0xff6ae0, mask: 0xf4eef6,
+    },
+    officers: [{ zh: '沉默者', en: 'THE SILENT' }, { zh: '擴散者', en: 'THE SPREADER' }, { zh: '偽裝者', en: 'THE MIMIC' }, { zh: '潛行者', en: 'THE LURKER' }],
+  },
   // 魏軍 (定軍山, 219): brown-black lamellar, red headbands / tassels / shields, blue-lacquered officers — the base look
   wei: {
     name: { zh: '魏軍', en: 'Wei' }, glyph: '魏', flag: '#b8301e', ui: '#e0412c', glow: [0.32, 0, 0, 0],

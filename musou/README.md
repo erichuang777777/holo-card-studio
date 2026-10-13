@@ -2,6 +2,7 @@
 > 新增：`src/chars/doctor/`（依照片製作的方塊醫師武將，沿用劉備的雙劍招式）、`viewer.html` + `src/viewer.js`（輕量武將檢視頁，可旋轉縮放、播放招式，不載入戰場）。
 > 試玩：`python3 -m http.server 8000` 後開啟 `viewer.html?char=doctor`，或 `?go=free&char=doctor&map=changban`。
 > 新增地圖：`src/world/maps/hospital.js`（乳醫中心：正門廣場、門診大廳與乳房攝影室、手術中心、病理病房），`mapview.html` + `src/mapview.js`（場景導覽，`mapview.html?map=hospital`）。試玩：`?go=free&char=doctor&map=hospital`。
+> 新增軍隊：`癌軍`（`src/crowd/armies.js` cancer + `src/crowd/view.js` cancerForm：瘤狀細胞頭、白色無臉面具、發光細縫眼、發光瘤；敵將：沉默者、擴散者、偽裝者、潛行者）。醫院地圖的自由演武自動派出癌軍。單兵檢視：`viewer.html?army=cancer`。
 > 原專案的 `media/`（截圖與預告片）未複製。
 
 <h1 align="center">Voxel Musou</h1>
