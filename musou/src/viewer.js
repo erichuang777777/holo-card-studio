@@ -2,7 +2,7 @@
 // stage with orbit controls. No map, crowd or post-processing, so it runs on phones and in software rendering.
 // ?char=<id> picks the officer (default: the first in CHAR_ORDER).
 import * as THREE from 'three';
-import { CHARS, CHAR_ORDER } from './chars/index.js';
+import { CHARS, CHAR_ORDER, paintPortrait as paint } from './chars/index.js';
 import { sampleClip, POSE_SIZE } from './hero/rig.js';
 import { standOfficer, poseOfficer } from './ui/stage.js';
 import { ARMIES } from './crowd/armies.js';
@@ -79,11 +79,7 @@ let officer = null, clipId = 'idle', clipT = 0;
 // Playable moves shown as buttons: idle, the normal string, the charges and the Musou opener when the kit has them.
 const MOVES = [['idle', '待機'], ['n1', '一段'], ['n3', '三段'], ['n6', '六段'], ['c1', '蓄力一'], ['c3', '蓄力三'], ['c6', '蓄力六'], ['dash', '突進'], ['jatk', '空中']];
 
-function paintPortrait(c) {
-  const g = $('portrait').getContext('2d');
-  g.clearRect(0, 0, 20, 20);
-  c.portrait.face.forEach((row, y) => [...row].forEach((k, x) => { if (k !== '.') { g.fillStyle = c.portrait.pal[k]; g.fillRect(x, y, 1, 1); } }));
-}
+const paintPortrait = (c) => paint($('portrait'), c);
 
 function load(next) {
   id = next;

@@ -7,8 +7,10 @@ const { clamp, inverseLerp } = THREE.MathUtils;
 /** 0 before a, 1 after b, linear between. */
 export const ramp = (t, a, b) => clamp(inverseLerp(a, b, t), 0, 1);
 
-/** sub: the officer's line, seal: the seal text, css: { big, sub } = the kit's colour / glow of the 無雙 and the line. */
-export function createOverlay({ sub, seal, css }) {
+/** sub: the officer's line, seal: the seal text, css: { big, sub } = the kit's colour / glow of the 無雙 and the line;
+ *  art?: url of a bust (musou/tools/portrait2d.py) that slides in on the left over a slanted band of colour band (the
+ *  anime "character focus" beat); left out of the cut-in when absent or when it fails to load. */
+export function createOverlay({ sub, seal, css, art, band = 'rgba(255,255,255,.25)' }) {
   const layer = (blend) => { const d = document.createElement('div'); d.style.cssText = `position:fixed;inset:0;pointer-events:none;opacity:0;display:none;mix-blend-mode:${blend}`; return d; };
   const dim = layer('multiply'), wash = layer('screen');
   (document.getElementById('c') || document.body.firstChild).after(dim, wash);
@@ -20,13 +22,18 @@ export function createOverlay({ sub, seal, css }) {
     .mu-cut .seal { position: absolute; right: 21.5%; top: 64%; width: 7vh; height: 7vh; background: #a8261b; color: #f3e2c8; border-radius: 0.8vh;
       font: 3.1vh/3.4vh "Kaiti SC", "STKaiti", serif; writing-mode: vertical-rl; display: flex; align-items: center; justify-content: center;
       box-shadow: 0 0 0 0.35vh rgba(243,226,200,.25) inset, 3px 4px 0 rgba(0,0,0,.4); transform-origin: 50% 50%; }
+    .mu-cut .band { position: absolute; left: -10vw; top: 6vh; width: 62vw; height: 88vh; background: linear-gradient(100deg, ${band}, transparent 85%);
+      clip-path: polygon(0 0, 100% 8%, 82% 100%, 0 92%); }
+    .mu-cut .art { position: absolute; left: 2vw; bottom: 0; height: 92vh; filter: drop-shadow(0 0 2vh rgba(0,0,0,.55)); }
     .mu-cut .sub { position: absolute; right: 22.5%; top: 37%; writing-mode: vertical-rl; font: 3vh/1 "Kaiti SC", "STKaiti", serif; letter-spacing: 1.2vh; ${css.sub} }`;
   document.head.appendChild(style);
   const cutEl = document.createElement('div');
   cutEl.className = 'mu-cut';
-  cutEl.innerHTML = `<div class="sub">${sub}</div><div class="big">無雙</div><div class="seal">${seal}</div>`;
+  cutEl.innerHTML = `<div class="sub">${sub}</div><div class="big">無雙</div><div class="seal">${seal}</div>`
+    + (art ? `<div class="band"></div><img class="art" alt="" src="${art}">` : '');
   document.body.appendChild(cutEl);
-  const [cutSub, cutBig, cutSeal] = cutEl.children;
+  const [cutSub, cutBig, cutSeal, cutBand, cutArt] = cutEl.children;
+  if (cutArt) { cutEl.prepend(cutBand, cutArt); cutArt.onerror = () => { cutArt.remove(); cutBand.remove(); }; }
   const setStyle = (el, k, v) => { if (el.style[k] !== v) el.style[k] = v; };
   const show = (el, v) => { setStyle(el, 'display', v > 0 ? 'block' : 'none'); setStyle(el, 'opacity', v.toFixed(3)); };   // unused layers leave the compositor
   return {
@@ -41,6 +48,11 @@ export function createOverlay({ sub, seal, css }) {
       setStyle(cutSeal, 'transform', `scale(${(2.2 - 1.2 * se).toFixed(3)}) rotate(-8deg)`);
       setStyle(cutSeal, 'opacity', se.toFixed(3));
       setStyle(cutSub, 'opacity', ramp(t, t0 + 10, t0 + 20).toFixed(3));
+      if (cutArt?.isConnected) {                          // the bust: whips in from the left, then drifts slowly
+        const e = 1 - (1 - ramp(t, t0, t0 + 7)) ** 3;
+        setStyle(cutArt, 'transform', `translateX(${((1 - e) * -40 + (t - t0) * 0.04).toFixed(2)}vw)`);
+        setStyle(cutBand, 'transform', `translateX(${((1 - e) * -60).toFixed(2)}vw)`);
+      }
     },
     hide() { show(dim, 0); show(wash, 0); show(cutEl, 0); },
     dispose() { for (const el of [dim, wash, style, cutEl]) el.remove(); },

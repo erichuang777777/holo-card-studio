@@ -9,7 +9,7 @@
 //   side?              {zh, en} faction on the select screen (default 蜀 Shu Han)
 //   lines              voice lines the HUD / story show: intro (battle start), musouEnd (shout after the Musou) {zh, en};
 //                      copy: [2 short lines] of vertical calligraphy shown while the Musou plays
-//   portrait {face, pal} 20×20 pixel portrait: rows of palette keys ('.' = clear), shared by the HUD badge, dialogue and
+//   portrait {face, pal, img?} 20×20 pixel portrait (img: optional hi-res badge url, chars/index.js paintPortrait): rows of palette keys ('.' = clear), shared by the HUD badge, dialogue and
 //                      select screen (paintPortrait below)
 //   kit                see below
 // }
@@ -122,7 +122,7 @@ export const CHARS = {
       musouEnd: { zh: '團隊同心，病魔必退！', en: 'One team, one heart — the illness will fall back!' },
       copy: ['仁心所至', '病魔辟易'],
     },
-    portrait: { face: DR_FACE, pal: DR_PAL },
+    portrait: { face: DR_FACE, pal: DR_PAL, img: 'assets/portraits/doctor-badge.png' },
     kit: DOCTOR_KIT,
   },
   surgeon: {
@@ -142,7 +142,7 @@ export const CHARS = {
       musouEnd: { zh: '切緣乾淨，手術完成。', en: 'Clean margins. Operation complete.' },
       copy: ['精準切除', '切緣乾淨'],
     },
-    portrait: { face: SG_FACE, pal: SG_PAL },
+    portrait: { face: SG_FACE, pal: SG_PAL, img: 'assets/portraits/surgeon-badge.png' },
     kit: SURGEON_KIT,
   },
   liubei: {
@@ -281,7 +281,27 @@ export const CHAR_ORDER = ['surgeon', 'doctor', 'liubei', 'guanyu', 'zhangfei', 
 
 /** Paint a char's 20×20 portrait into a canvas (width/height 20; scale it with CSS, image-rendering: pixelated). */
 export function paintPortrait(cv, char) {
-  const g = cv.getContext('2d'), { face, pal } = char.portrait;
-  g.clearRect(0, 0, cv.width, cv.height);
-  face.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) { g.fillStyle = pal[ch]; g.fillRect(x, y, 1, 1); } }));
+  const { face, pal, img } = char.portrait;
+  const pixels = () => {
+    if (cv.width !== 20) { cv.width = 20; cv.height = 20; }
+    const g = cv.getContext('2d');
+    g.clearRect(0, 0, 20, 20);
+    face.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) { g.fillStyle = pal[ch]; g.fillRect(x, y, 1, 1); } }));
+  };
+  cv.dataset.who = char.id;
+  pixels();
+  // portrait.img: an optional hi-res pixel badge (musou/tools/portrait2d.py, 64 × 64); painted over the 20 × 20 once it
+  // has loaded, kept on the code portrait when the file is absent (the generated art is not in the repo)
+  const im = img && hiRes(img);
+  if (im) im.then((bm) => {
+    if (!bm || cv.dataset.who !== char.id) return;                     // missing, or the canvas has moved on
+    cv.width = bm.width; cv.height = bm.height;
+    cv.getContext('2d').drawImage(bm, 0, 0);
+  });
+}
+const HIRES = new Map();
+/** img url → Promise<HTMLImageElement | null> (null when it fails to load), once per url. */
+function hiRes(url) {
+  if (!HIRES.has(url)) HIRES.set(url, new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = url; }));
+  return HIRES.get(url);
 }

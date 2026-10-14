@@ -85,7 +85,7 @@ const kit = defKit({
     mu: { crack: [2.2, 1.8, 0.6], wall: [0.7, 1.0, 0.42], light: [1, 0.9, 0.5] },
   },
   look: {
-    cut: { sub: '乳房醫學中心', seal: '仁心', css: {
+    cut: { sub: '乳房醫學中心', seal: '仁心', art: 'assets/portraits/doctor-cut.png', band: 'rgba(232,120,158,.4)', css: {
       big: 'color: #fbf6e6; text-shadow: 0 0 2px #0c1a10, 6px 8px 0 rgba(6,16,8,.55), 0 0 28px rgba(230,200,90,.6);',
       sub: 'color: #eaf6dc; text-shadow: 0 0 10px rgba(90,210,140,.75), 2px 2px 0 rgba(0,0,0,.6);' } },
     pal: { rays: [1.3, 1.1, 0.4], ring: [1.5, 2.0, 0.8], bolt: null, burst: [1.8, 1.6, 0.6], ko: [0.9, 0.95, 0.4], glow: 0xffe6a0,

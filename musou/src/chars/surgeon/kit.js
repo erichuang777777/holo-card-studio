@@ -103,7 +103,7 @@ const kit = defKit({
     mu: { crack: [0.7, 2.2, 1.2], wall: [0.35, 1.0, 0.6], light: [0.5, 1, 0.75] },
   },
   look: {
-    cut: { sub: '精準切除・前線裁決', seal: '刃', css: {
+    cut: { sub: '精準切除・前線裁決', seal: '刃', art: 'assets/portraits/surgeon-cut.png', band: 'rgba(61,255,138,.4)', css: {
       big: 'color: #effff6; text-shadow: 0 0 2px #04140c, 6px 8px 0 rgba(2,12,8,.55), 0 0 28px rgba(60,255,140,.6);',
       sub: 'color: #dcffe9; text-shadow: 0 0 10px rgba(60,255,140,.75), 2px 2px 0 rgba(0,0,0,.6);' } },
     pal: { rays: [0.5, 1.4, 0.8], ring: [0.8, 2.1, 1.3], bolt: null, burst: [0.8, 1.9, 1.1], ko: [0.4, 0.95, 0.6], glow: 0x9affc8,
