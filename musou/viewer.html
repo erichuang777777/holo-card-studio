@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>武將檢視</title>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+</script>
+<style>
+  :root { --accent: #e8789e; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #120d0b; color: #f3ead8;
+    font-family: "Noto Serif TC", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", serif; }
+  canvas { display: block; width: 100vw; height: 100vh; touch-action: none; }
+  .panel { position: fixed; left: 24px; top: 24px; max-width: 360px; background: #0d0908cc; border: 1px solid #ffffff22;
+    border-left: 4px solid var(--accent); border-radius: 10px; padding: 16px 20px; }
+  .panel h1 { margin: 0; font-size: 44px; letter-spacing: 6px; }
+  .panel .sub { color: #d8c49a; margin: 4px 0 10px; }
+  .panel p { margin: 6px 0; font-size: 14px; line-height: 1.6; color: #e8dcc6; }
+  .portrait { float: right; width: 80px; height: 80px; image-rendering: pixelated; border: 2px solid var(--accent); border-radius: 50%; margin-left: 12px; }
+  .bar { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 32px); }
+  .bar button { font: inherit; border: 1px solid #ffffff33; background: #0d0908cc; color: #f3ead8; padding: 8px 14px; border-radius: 18px; cursor: pointer; }
+  .bar button[aria-pressed=true] { background: var(--accent); color: #fff; }
+  .hint { position: fixed; right: 20px; top: 20px; font-size: 13px; color: #b8a888; }
+  select { font: inherit; background: #0d0908; color: #f3ead8; border: 1px solid #ffffff33; border-radius: 6px; padding: 4px 8px; }
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="可旋轉縮放的武將 3D 模型"></canvas>
+<div class="panel"><canvas class="portrait" id="portrait" width="20" height="20"></canvas>
+  <h1 id="name"></h1><div class="sub" id="title"></div><p id="bio"></p><p id="weapon"></p>
+  <p><label>武將 <select id="who"></select></label></p></div>
+<div class="hint">拖曳旋轉・滾輪或雙指縮放</div>
+<div class="bar" id="bar"></div>
+<script type="module" src="./src/viewer.js"></script>
+</body>
+</html>
