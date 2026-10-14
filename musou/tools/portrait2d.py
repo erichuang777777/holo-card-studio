@@ -7,6 +7,10 @@ cut-out): writes into musou/assets/portraits/ (gitignored: portraits of real peo
                    accent-coloured rim light
 
 usage: python3 tools/portrait2d.py <cutout.png> <id> [--accent #3dff8a] [--badge-colors 22] [--cel-colors 12]
+       python3 tools/portrait2d.py <sheet.webp> <id> --art --crop x,y,w,h [--badge-crop x,y,w,h]
+  --art: the source is already a painted illustration (e.g. a character sheet): the cut-in keeps its painting (cut out
+  of its background with rembg, outlined, rim-lit) instead of being cel-shaded; --crop picks the figure out of the
+  sheet, --badge-crop a face close-up for the badge (default: the figure's own face).
 The game picks these up when present (chars/index.js paintPortrait, musou/overlay.js) and falls back to the 20 × 20
 code portrait when they are not.
 """
@@ -137,20 +141,72 @@ def cut_art(rgba, face, colors, accent):
     return res
 
 
+def box(arg):
+    return tuple(int(v) for v in arg.split(',')) if arg else None
+
+
+def load(path, rect=None, cutout=False):
+    """RGBA uint8 of path (cropped to rect x,y,w,h); cutout: remove the background with rembg (isnet-general-use)."""
+    im = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+    if im.ndim == 2:
+        im = cv2.cvtColor(im, cv2.COLOR_GRAY2BGR)
+    if im.shape[2] == 3:
+        im = np.dstack([im, np.full(im.shape[:2], 255, np.uint8)])
+    rgba = cv2.cvtColor(im, cv2.COLOR_BGRA2RGBA)
+    if rect:
+        x, y, w, h = rect
+        rgba = rgba[y:y + h, x:x + w].copy()
+    if cutout:
+        from rembg import new_session, remove
+        from PIL import Image
+        cut = remove(Image.fromarray(rgba), session=new_session('isnet-general-use'))
+        rgba = np.array(cut.convert('RGBA'))
+    return rgba
+
+
+def art_cut(rgba, accent, height=1000):
+    """A painted figure for the cut-in: trimmed to its silhouette, a dark outline, a thin accent rim on its right."""
+    mask = rgba[..., 3] > 128
+    ys, xs = np.where(mask)
+    rgba = rgba[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    scale = height / rgba.shape[0]
+    rgba = cv2.resize(rgba, (int(rgba.shape[1] * scale), height), interpolation=cv2.INTER_AREA if scale < 1 else cv2.INTER_CUBIC)
+    pad = 8
+    rgba = cv2.copyMakeBorder(rgba, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=(0, 0, 0, 0))
+    a = rgba[..., 3]
+    mask = a > 128
+    dist = cv2.distanceTransform(mask.astype(np.uint8), cv2.DIST_L2, 5)
+    side = np.clip((np.arange(mask.shape[1])[None, :] / mask.shape[1] - 0.5) * 3, 0, 1)
+    rim = (np.exp(-dist / 4.0) * side * mask)[..., None]
+    acc = np.array([int(accent[i:i + 2], 16) for i in (1, 3, 5)], np.float32)
+    rgb = rgba[..., :3].astype(np.float32) * (1 - 0.6 * rim) + acc * 0.6 * rim
+    outline = cv2.dilate(mask.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))).astype(bool) & ~mask
+    out = np.zeros(rgba.shape, np.uint8)
+    out[..., :3] = np.clip(rgb, 0, 255).astype(np.uint8)
+    out[..., 3] = a
+    out[outline] = (10, 12, 18, 255)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('src'), ap.add_argument('id')
     ap.add_argument('--accent', default='#3dff8a')
     ap.add_argument('--badge-colors', type=int, default=22)
     ap.add_argument('--cel-colors', type=int, default=14)
+    ap.add_argument('--art', action='store_true')
+    ap.add_argument('--crop'), ap.add_argument('--badge-crop')
     a = ap.parse_args()
-    im = cv2.imread(a.src, cv2.IMREAD_UNCHANGED)
-    if im.shape[2] == 3:
-        im = np.dstack([im, np.full(im.shape[:2], 255, np.uint8)])
-    rgba = cv2.cvtColor(im, cv2.COLOR_BGRA2RGBA)
-    face = face_box(rgba[..., :3])
     os.makedirs(OUT, exist_ok=True)
-    for name, img in (('badge', badge(rgba, face, a.badge_colors)), ('cut', cut_art(rgba, face, a.cel_colors, a.accent))):
+    if a.art:
+        fig = load(a.src, box(a.crop), cutout=True)
+        bsrc = load(a.src, box(a.badge_crop), cutout=True) if a.badge_crop else fig
+        outs = (('badge', badge(bsrc, face_box(bsrc[..., :3]), a.badge_colors)), ('cut', art_cut(fig, a.accent)))
+    else:
+        rgba = load(a.src, box(a.crop))
+        face = face_box(rgba[..., :3])
+        outs = (('badge', badge(rgba, face, a.badge_colors)), ('cut', cut_art(rgba, face, a.cel_colors, a.accent)))
+    for name, img in outs:
         p = os.path.join(OUT, f'{a.id}-{name}.png')
         cv2.imwrite(p, cv2.cvtColor(img, cv2.COLOR_RGBA2BGRA))
         print('wrote', os.path.relpath(p), img.shape[1], 'x', img.shape[0])
