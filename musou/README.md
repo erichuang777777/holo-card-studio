@@ -3,6 +3,7 @@
 > 試玩：`python3 -m http.server 8000` 後開啟 `viewer.html?char=doctor`，或 `?go=free&char=doctor&map=changban`。
 > 新增地圖：`src/world/maps/hospital.js`（乳醫中心：正門廣場、門診大廳與乳房攝影室、手術中心、病理病房），`mapview.html` + `src/mapview.js`（場景導覽，`mapview.html?map=hospital`）。試玩：`?go=free&char=doctor&map=hospital`。
 > 新增軍隊：`癌軍`（`src/crowd/armies.js` cancer + `src/crowd/view.js` cancerForm：瘤狀細胞頭、白色無臉面具、發光細縫眼、發光瘤；敵將：沉默者、擴散者、偽裝者、潛行者）。醫院地圖的自由演武自動派出癌軍。單兵檢視：`viewer.html?army=cancer`。
+> 新增武將：`外科醫師`（`src/chars/surgeon/`，依多角度設定圖製作）：海軍藍長版上衣與高領、白銀裝甲、黑色緊身衣、螢光綠發光線條；右手電漿手術刀、左手超音波剪、雙浮游手術燈無人機、止血夾腰帶、背部引流過濾模組。檢視：`viewer.html?char=surgeon`。
 > 原專案的 `media/`（截圖與預告片）未複製。
 
 <h1 align="center">Voxel Musou</h1>

@@ -70,7 +70,7 @@ function limbs(T) {
 }
 
 // ---------------------------------------------------------------- head (HV voxels, chin y 0, columns centred on 0)
-function head() {
+export function head() {
   const hair = (x, y, z) => (md(x * 3 + z + y * 2, 7) === 0 ? C.hairH : C.hair);
   return [
     // a full, slightly round face and skull

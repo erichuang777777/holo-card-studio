@@ -48,6 +48,8 @@ import { FACE as GY_FACE, PAL as GY_PAL } from './guanyu/model.js';
 import { LIUBEI_KIT } from './liubei/kit.js';
 import { FACE as LB_FACE, PAL as LB_PAL } from './liubei/model.js';
 import { DOCTOR_KIT } from './doctor/kit.js';
+import { SURGEON_KIT } from './surgeon/kit.js';
+import { FACE as SG_FACE, PAL as SG_PAL } from './surgeon/model.js';
 import { FACE as DR_FACE, PAL as DR_PAL } from './doctor/model.js';
 import { ZHUGELIANG_KIT } from './zhugeliang/kit.js';
 import { FACE as ZG_FACE, PAL as ZG_PAL } from './zhugeliang/model.js';
@@ -122,6 +124,26 @@ export const CHARS = {
     },
     portrait: { face: DR_FACE, pal: DR_PAL },
     kit: DOCTOR_KIT,
+  },
+  surgeon: {
+    id: 'surgeon', side: { zh: '乳醫', en: 'Breast Center' },
+    // 依多角度設定圖（SURGEON — Precision Excision, Frontline Arbiter）製作；姓名與台詞待本人確認。
+    name: { zh: '外科醫師', en: 'Surgeon' }, courtesy: { zh: '精切', en: 'Jingqie' }, seal: '刃',
+    title: { zh: '前線裁決者', en: 'Frontline Arbiter' }, motto: '精準切除 · 電漿手術刀 · 超音波刀',
+    weapon: { zh: '電漿手術刀・超音波剪', en: 'Plasma Scalpel & Ultrasonic Shears' },
+    bio: {
+      zh: ['乳房外科前線的執刀者，雙無人機的手術燈為他照亮術野。', '右手電漿手術刀精準切除，左手超音波剪止血閉合，背負引流過濾模組。'],
+      en: ['The Breast Center\'s frontline operator; two surgical-light drones light his field.',
+        'A plasma scalpel cuts precisely, ultrasonic shears seal and stop the bleeding; a drainage module rides on his back.'],
+    },
+    stats: { atk: 5, def: 3, speed: 4, range: 3 }, musou: { zh: '精準切除', en: 'Precision Excision' }, accent: '#3dff8a',
+    lines: {
+      intro: { zh: '術野清晰，開始精準切除！', en: 'Field is clear — beginning precision excision!' },
+      musouEnd: { zh: '切緣乾淨，手術完成。', en: 'Clean margins. Operation complete.' },
+      copy: ['精準切除', '切緣乾淨'],
+    },
+    portrait: { face: SG_FACE, pal: SG_PAL },
+    kit: SURGEON_KIT,
   },
   liubei: {
     id: 'liubei',
@@ -255,7 +277,7 @@ export const CHARS = {
     kit: LUBU_KIT,
   },
 };
-export const CHAR_ORDER = ['doctor', 'liubei', 'guanyu', 'zhangfei', 'zhaoyun', 'zhugeliang', 'huangzhong', 'lubu'].filter((id) => CHARS[id]);
+export const CHAR_ORDER = ['surgeon', 'doctor', 'liubei', 'guanyu', 'zhangfei', 'zhaoyun', 'zhugeliang', 'huangzhong', 'lubu'].filter((id) => CHARS[id]);
 
 /** Paint a char's 20×20 portrait into a canvas (width/height 20; scale it with CSS, image-rendering: pixelated). */
 export function paintPortrait(cv, char) {
